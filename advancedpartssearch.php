@@ -25,6 +25,20 @@ class AdvancedPartsSearch extends Module
 		  $this->warning = $this->l('No name provided');
 	}
 
+	public function install()
+	{
+		// See if multistore is active and set context to all
+		if (Shop::isFeatureActive())
+			Shop::setContext(Shop::CONTEXT_ALL);
+
+		return parent::install() &&
+			// $this->registerHook('leftColumn') &&
+			// $this->registerHook('home') &&
+			$this->registerHook('top') &&
+			$this->registerHook('header') &&
+			Configuration::updateValue('MYMODULE_NAME', 'Ibex');
+	}
+
 	/*
 	Display a config link in back office
 	*/
@@ -110,24 +124,11 @@ class AdvancedPartsSearch extends Module
 	    return $helper->generateForm($fields_form);
 	}
 
-	public function install()
-	{
-		// See if multistore is active and set context to all
-		if (Shop::isFeatureActive())
-			Shop::setContext(Shop::CONTEXT_ALL);
-
-		return parent::install() &&
-			$this->registerHook('leftColumn') &&
-			$this->registerHook('home') &&
-			$this->registerHook('top') &&
-			$this->registerHook('header') &&
-			Configuration::updateValue('MYMODULE_NAME', 'Ibex');
-	}
-
 	public function hookDisplayLeftColumn($params)
 	{
 		$this->context->smarty->assign(
 		  array(
+		  	'base_url' => __PS_BASE_URI__,
 		      'my_module_name' => Configuration::get('MYMODULE_NAME'),
 		      'my_module_link' => $this->context->link->getModuleLink('advancedpartssearch', 'searchresults'),
 		      'my_module_message' => $this->l('Your search results..') // Do not forget to enclose your strings in the l() translation method
@@ -137,10 +138,10 @@ class AdvancedPartsSearch extends Module
 		return $this->display(__FILE__, 'advancedpartssearch.tpl');
 	}
 
-	public function hookDisplayRightColumn($params)
-	{
-		return $this->hookDisplayLeftColumn($params);
-	}
+	// public function hookDisplayRightColumn($params)
+	// {
+	// 	return $this->hookDisplayLeftColumn($params);
+	// }
 
 	public function hookDisplayHome($params)
 	{
