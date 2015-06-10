@@ -1,49 +1,37 @@
 <!-- Block mymodule -->
 <div id="mymodule_block_home" class="block col-lg-12 clearfix">
-  <!-- <h4>Welcome!</h4> -->
   <div class="block_content">
-    <!-- <p>Hello,
-       {if isset($my_module_name) && $my_module_name}
-           {$my_module_name}
-       {else}
-           World
-       {/if}
-       !       
-    </p> 
-    <ul>
-      <li><a href="{$my_module_link}" title="Click this link">Click me!</a></li>
-    </ul> -->
-    <form class="form-inline">
+    <form id="searchbox" class="form-inline" method="get" action="{$base_url}search">
       <div class="form-group">
         <label for="category">Category</label>
-        <select id="category" class="form-control" onchange="getBrands(this)">
+        <select id="category" name="search_category" class="form-control" onchange="getBrands(this)">
           <option>-- Select Category --</option>
         </select>
       </div>
       
       <div class="form-group">
         <label for="brand">Brand</label>
-        <select id="brand" class="form-control" onchange="getSeries(this)">
+        <select id="brand" name="search_brand" class="form-control" onchange="getSeries(this)">
           <option>-- Select Brand --</option>
         </select>
       </div>
 
       <div class="form-group">
         <label for="series">Series</label>
-        <select id="series" class="form-control" onchange="getModels(this)">
+        <select id="series" name="search_series" class="form-control" onchange="getModels(this)">
           <option>-- Select Series --</option>
         </select>
       </div>
 
       <div class="form-group">
         <label for="model">Model</label>
-        <select id="model" class="form-control">
+        <select id="model" name="search_model" class="form-control">
           <option>-- Select Model --</option>
         </select>
       </div>
 
       <div class="form-group">
-        <button type="submit" class="btn btn-default">Search</button>
+        <button type="submit" class="btn btn-default btn-search" name="submit_search">Search</button>
       </div>
     </form>  
     
@@ -56,13 +44,10 @@
 
 function getData(params)
 {
-  // var baseDir = 'http://localhost/prestashop16/';
-  // $('#brand').empty()
-  
   $.ajax({    
     type: "POST",
     url: '{$base_url}modules/advancedpartssearch/ajax.php',
-    data: params, //{ 'method': 'getCategories' },
+    data: params,
     success: function(data){
 
       var opts = $.parseJSON(data);
@@ -70,8 +55,8 @@ function getData(params)
 
       for (var j = 0; j < opts.length; j++) {
         $.each(opts[j], function(i, d) {                
-          if(i == 'Id') id = d;
-          if(i == 'Name') name = d;
+          if(i == 'id') id = d;
+          if(i == 'name') name = d;
         });
 
         if(id != null && name != null) {
@@ -88,68 +73,34 @@ getCategories();
 function getCategories() {
   var selector = '#category';
   $(selector).empty();
-  // var dropDown = document.getElementById("category");
-  // var category = dropDown.options[dropDown.selectedIndex].value;
   var params = { node: selector, 'method': 'getCategories' };
+  getData(params);
+}
+
+function getFeatures(selector, method) {
+  $(selector).empty();
+  var dropDown = document.getElementById("category");
+  var category = dropDown.options[dropDown.selectedIndex].value;
+  var params = { node: selector, 'category': category, 'method': method };
   getData(params);
 }
 
 function getBrands(obj) {
   var selector = '#brand';
-  $(selector).empty();
-  var dropDown = document.getElementById("category");
-  var category = dropDown.options[dropDown.selectedIndex].value;
-  var params = { node: selector, 'category': category, 'method': 'getBrands' };
-  getData(params);
+  var method = 'getBrands';
+  getFeatures(selector, method);
 }
 
 function getSeries(obj) {
   var selector = '#series';
-  $(selector).empty();
-  var dropDown = document.getElementById("brand");
-  var brand = dropDown.options[dropDown.selectedIndex].value;
-  var params = { node: selector, 'brand': brand, 'method': 'getSeries' };
-  getData(params);
+  var method = 'getSeries';
+  getFeatures(selector, method);
 }
 
 function getModels(obj) {
   var selector = '#model';
-  $(selector).empty();
-  var dropDown = document.getElementById("series");
-  var series = dropDown.options[dropDown.selectedIndex].value;
-  var params = { node: selector, 'series': series, 'method': 'getModels' };
-  getData(params);
+  var method = 'getModels';
+  getFeatures(selector, method);
 }
-
-// function getBrands1(obj)
-// {
-//   var baseDir = 'http://localhost/prestashop16/';
-//   $('#brand').empty();
-//   var dropDown = document.getElementById("category");
-//   var category = dropDown.options[dropDown.selectedIndex].value;
-
-//   $.ajax({    
-//     type: "POST",
-//     url: 'http://localhost/prestashop16/modules/advancedpartssearch/ajax.php',
-//     data: { 'category': category, 'method': 'getBrands' },
-//     success: function(data){
-
-//       var opts = $.parseJSON(data);
-//       var brandid = brandname = null;
-
-//       for (var j = opts.length - 1; j >= 0; j--) {
-//         $.each(opts[j], function(i, d) {                
-//           if(i == 'BrandId') brandid = d;
-//           if(i == 'BrandName') brandname = d;
-//         });
-
-//         if(brandid != null && brandname != null) {
-//           $('#brand').append('<option value="' + brandid + '">' + brandname + '</option>');
-//           brandid = brandname = null;
-//         }
-//       }
-//     }
-//   });
-// }
 
 </script>
